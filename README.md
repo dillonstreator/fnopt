@@ -56,25 +56,7 @@ type Server struct {
 	cert     *tls.Certificate
 }
 
-func ServerWithTimeout(timeout time.Duration) fnopt.OptFn[Server] {
-	return func(cfg *Server) {
-		cfg.timeout = timeout
-	}
-}
-
-func ServerWithMaxConns(maxConns int) fnopt.OptFn[Server] {
-	return func(cfg *Server) {
-		cfg.maxConns = maxConns
-	}
-}
-
-func ServerWithCert(cert *tls.Certificate) fnopt.OptFn[Server] {
-	return func(cfg *Server) {
-		cfg.cert = cert
-	}
-}
-
-func NewServer(addr string, optFns ...fnopt.OptFn[Server]) (*Server, error) {
+func NewServer(addr string, optFns ...serverFnOpt) (*Server, error) {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return nil, err
@@ -89,6 +71,26 @@ func NewServer(addr string, optFns ...fnopt.OptFn[Server]) (*Server, error) {
 	fnopt.NewFrom(srv, optFns...)
 
 	return srv, nil
+}
+
+type serverFnOpt = fnopt.OptFn[Server]
+
+func ServerWithTimeout(timeout time.Duration) serverFnOpt {
+	return func(cfg *Server) {
+		cfg.timeout = timeout
+	}
+}
+
+func ServerWithMaxConns(maxConns int) serverFnOpt {
+	return func(cfg *Server) {
+		cfg.maxConns = maxConns
+	}
+}
+
+func ServerWithCert(cert *tls.Certificate) serverFnOpt {
+	return func(cfg *Server) {
+		cfg.cert = cert
+	}
 }
 ```
 
@@ -116,40 +118,7 @@ type ServerE struct {
 	cert     *tls.Certificate
 }
 
-func ServerEWithTimeout(timeout time.Duration) fnopt.OptFnE[ServerE] {
-	return func(cfg *ServerE) error {
-		if timeout < 0 {
-			return fmt.Errorf("invalid timeout less than 0: %s", timeout)
-		}
-
-		cfg.timeout = timeout
-		return nil
-	}
-}
-
-func ServerEWithMaxConns(maxConns int) fnopt.OptFnE[ServerE] {
-	return func(cfg *ServerE) error {
-		if maxConns < 0 {
-			return fmt.Errorf("invalid max conns less than 0: %d", maxConns)
-		}
-
-		cfg.maxConns = maxConns
-		return nil
-	}
-}
-
-func ServerEWithCert(cert *tls.Certificate) fnopt.OptFnE[ServerE] {
-	return func(cfg *ServerE) error {
-		if cert == nil {
-			return errors.New("invalid nil cert")
-		}
-
-		cfg.cert = cert
-		return nil
-	}
-}
-
-func NewServerE(addr string, optFns ...fnopt.OptFnE[ServerE]) (*ServerE, error) {
+func NewServerE(addr string, optFns ...serverEFnOpt) (*ServerE, error) {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return nil, err
@@ -167,5 +136,40 @@ func NewServerE(addr string, optFns ...fnopt.OptFnE[ServerE]) (*ServerE, error) 
 	}
 
 	return srv, nil
+}
+
+type serverEFnOpt = fnopt.OptFnE[ServerE]
+
+func ServerEWithTimeout(timeout time.Duration) serverEFnOpt {
+	return func(cfg *ServerE) error {
+		if timeout < 0 {
+			return fmt.Errorf("invalid timeout less than 0: %s", timeout)
+		}
+
+		cfg.timeout = timeout
+		return nil
+	}
+}
+
+func ServerEWithMaxConns(maxConns int) serverEFnOpt {
+	return func(cfg *ServerE) error {
+		if maxConns < 0 {
+			return fmt.Errorf("invalid max conns less than 0: %d", maxConns)
+		}
+
+		cfg.maxConns = maxConns
+		return nil
+	}
+}
+
+func ServerEWithCert(cert *tls.Certificate) serverEFnOpt {
+	return func(cfg *ServerE) error {
+		if cert == nil {
+			return errors.New("invalid nil cert")
+		}
+
+		cfg.cert = cert
+		return nil
+	}
 }
 ```
