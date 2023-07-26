@@ -1,20 +1,17 @@
 package fnopt
 
-// OptFn[T] is a function type used to enable generic `T` creation with options.
+// OptFn is a function type used to define functional options for mutating the generic type `T`
 type OptFn[T any] func(cfg *T)
 
-// New[T] creates a new struct of type `T` and modifies it by applying the provided
-// option functions to it.
-//
-// This is useful for functional options in methods.
+// New creates a new struct pointer of type `T` and modifies it by applying
+// the provided option functions to it.
 func New[T any](optFns ...OptFn[T]) *T {
 	t, _ := NewE(optFnsToOptFnEs(optFns...)...)
 	return t
 }
 
-// NewFrom[T] modifies an existing struct of type `T` by applying the provided option functions to it.
-//
-// This is useful for constructing structs with optional functions.
+// NewFrom modifies an existing struct pointer of type `T` by applying the
+// provided option functions to it.
 func NewFrom[T any](t *T, optFns ...OptFn[T]) {
 	NewFromE(t, optFnsToOptFnEs(optFns...)...)
 }
@@ -22,10 +19,8 @@ func NewFrom[T any](t *T, optFns ...OptFn[T]) {
 // OptFnE[T] is a function type used to enable generic `T` creation with error handling.
 type OptFnE[T any] func(cfg *T) error
 
-// NewE[T] creates a new struct of type `T` and modifies it by applying the provided
-// option functions to it with error handling.
-//
-// This is useful for functional options in methods.
+// NewE creates a new struct pointer of type `T` and modifies it by applying
+// the provided option functions to it and propagating any errors.
 func NewE[T any](optFns ...OptFnE[T]) (*T, error) {
 	cfg := new(T)
 
@@ -37,9 +32,8 @@ func NewE[T any](optFns ...OptFnE[T]) (*T, error) {
 	return cfg, nil
 }
 
-// NewFromE[T] modifies an existing struct of type `T` by applying the provided option functions to it with error handling.
-//
-// This is useful for constructing structs with optional functions.
+// NewFromE modifies an existing struct pointer of type `T` by applying the
+// provided option functions to it and propagating any errors.
 func NewFromE[T any](t *T, optFns ...OptFnE[T]) error {
 	for _, optFn := range optFns {
 		err := optFn(t)

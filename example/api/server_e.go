@@ -1,4 +1,4 @@
-package somepkg
+package api
 
 import (
 	"crypto/tls"
@@ -17,40 +17,7 @@ type ServerE struct {
 	cert     *tls.Certificate
 }
 
-func ServerEWithTimeout(timeout time.Duration) fnopt.OptFnE[ServerE] {
-	return func(cfg *ServerE) error {
-		if timeout < 0 {
-			return fmt.Errorf("invalid timeout less than 0: %s", timeout)
-		}
-
-		cfg.timeout = timeout
-		return nil
-	}
-}
-
-func ServerEWithMaxConns(maxConns int) fnopt.OptFnE[ServerE] {
-	return func(cfg *ServerE) error {
-		if maxConns < 0 {
-			return fmt.Errorf("invalid max conns less than 0: %d", maxConns)
-		}
-
-		cfg.maxConns = maxConns
-		return nil
-	}
-}
-
-func ServerEWithCert(cert *tls.Certificate) fnopt.OptFnE[ServerE] {
-	return func(cfg *ServerE) error {
-		if cert == nil {
-			return errors.New("invalid nil cert")
-		}
-
-		cfg.cert = cert
-		return nil
-	}
-}
-
-func NewServerE(addr string, optFns ...fnopt.OptFnE[ServerE]) (*ServerE, error) {
+func NewServerE(addr string, optFns ...serverEOptFn) (*ServerE, error) {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return nil, err
@@ -68,4 +35,39 @@ func NewServerE(addr string, optFns ...fnopt.OptFnE[ServerE]) (*ServerE, error) 
 	}
 
 	return srv, nil
+}
+
+type serverEOptFn = fnopt.OptFnE[ServerE]
+
+func ServerEWithTimeout(timeout time.Duration) serverEOptFn {
+	return func(cfg *ServerE) error {
+		if timeout < 0 {
+			return fmt.Errorf("invalid timeout less than 0: %s", timeout)
+		}
+
+		cfg.timeout = timeout
+		return nil
+	}
+}
+
+func ServerEWithMaxConns(maxConns int) serverEOptFn {
+	return func(cfg *ServerE) error {
+		if maxConns < 0 {
+			return fmt.Errorf("invalid max conns less than 0: %d", maxConns)
+		}
+
+		cfg.maxConns = maxConns
+		return nil
+	}
+}
+
+func ServerEWithCert(cert *tls.Certificate) serverEOptFn {
+	return func(cfg *ServerE) error {
+		if cert == nil {
+			return errors.New("invalid nil cert")
+		}
+
+		cfg.cert = cert
+		return nil
+	}
 }
