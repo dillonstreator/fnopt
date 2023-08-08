@@ -29,7 +29,7 @@ func NewServerE(addr string, optFns ...serverEOptFn) (*ServerE, error) {
 		timeout:  time.Minute,
 	}
 
-	err = fnopt.NewFromE(srv, optFns...)
+	err = fnopt.FromE(srv, optFns...)
 	if err != nil {
 		return nil, err
 	}

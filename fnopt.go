@@ -10,10 +10,10 @@ func New[T any](optFns ...OptFn[T]) *T {
 	return t
 }
 
-// NewFrom modifies an existing struct pointer of type `T` by applying the
+// From modifies an existing struct pointer of type `T` by applying the
 // provided option functions to it.
-func NewFrom[T any](t *T, optFns ...OptFn[T]) {
-	NewFromE(t, optFnsToOptFnEs(optFns...)...)
+func From[T any](t *T, optFns ...OptFn[T]) {
+	FromE(t, optFnsToOptFnEs(optFns...)...)
 }
 
 // OptFnE[T] is a function type used to enable generic `T` creation with error handling.
@@ -24,7 +24,7 @@ type OptFnE[T any] func(cfg *T) error
 func NewE[T any](optFns ...OptFnE[T]) (*T, error) {
 	cfg := new(T)
 
-	err := NewFromE(cfg, optFns...)
+	err := FromE(cfg, optFns...)
 	if err != nil {
 		return nil, err
 	}
@@ -32,9 +32,9 @@ func NewE[T any](optFns ...OptFnE[T]) (*T, error) {
 	return cfg, nil
 }
 
-// NewFromE modifies an existing struct pointer of type `T` by applying the
+// FromE modifies an existing struct pointer of type `T` by applying the
 // provided option functions to it and propagating any errors.
-func NewFromE[T any](t *T, optFns ...OptFnE[T]) error {
+func FromE[T any](t *T, optFns ...OptFnE[T]) error {
 	for _, optFn := range optFns {
 		err := optFn(t)
 		if err != nil {

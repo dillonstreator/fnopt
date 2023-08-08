@@ -27,7 +27,7 @@ func NewServer(addr string, optFns ...serverOptFn) (*Server, error) {
 		timeout:  time.Minute,
 	}
 
-	fnopt.NewFrom(srv, optFns...)
+	fnopt.From(srv, optFns...)
 
 	return srv, nil
 }

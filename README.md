@@ -20,9 +20,9 @@ The `OptFn` type represents a functional option that modifies a configuration st
 
 The `New` function is useful for creating instances of a struct with functional options. It takes the type `T` of the target struct and applies the provided option functions to it, allowing you to initialize and configure the struct in a single call.
 
-### `fnopt.NewFrom`
+### `fnopt.From`
 
-The `NewFrom` function allows you to modify an existing struct of type `T` by applying the provided option functions to it. This is helpful when you have an existing instance that requires further configuration.
+The `From` function allows you to modify an existing struct of type `T` by applying the provided option functions to it. This is helpful when you have an existing instance that requires further configuration.
 
 ### Error-enabled Versions
 
@@ -32,7 +32,7 @@ In addition to the basic components, `fnopt` also provides error-enabled counter
 
 - `fnopt.NewE`: Similar to `fnopt.New`, `NewE` creates instances of a struct with error-enabled functional options, enabling the initialization and configuration of the struct while handling potential errors.
 
-- `fnopt.NewFromE`: The `NewFromE` function is the error-enabled version of `NewFrom`. It allows you to modify an existing struct with functional options that may return errors during the configuration process.
+- `fnopt.FromE`: The `FromE` function is the error-enabled version of `From`. It allows you to modify an existing struct with functional options that may return errors during the configuration process.
 
 ## Example
 
@@ -68,7 +68,7 @@ func NewServer(addr string, optFns ...serverFnOpt) (*Server, error) {
 		timeout:  time.Minute,
 	}
 
-	fnopt.NewFrom(srv, optFns...)
+	fnopt.From(srv, optFns...)
 
 	return srv, nil
 }
@@ -130,7 +130,7 @@ func NewServerE(addr string, optFns ...serverEFnOpt) (*ServerE, error) {
 		timeout:  time.Minute,
 	}
 
-	err = fnopt.NewFromE(srv, optFns...)
+	err = fnopt.FromE(srv, optFns...)
 	if err != nil {
 		return nil, err
 	}

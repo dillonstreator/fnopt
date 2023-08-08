@@ -78,14 +78,14 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestNewFrom(t *testing.T) {
+func TestFrom(t *testing.T) {
 	cfg := &TestConfig{
 		count:      5,
 		doThing:    true,
 		otherThing: true,
 	}
 
-	NewFrom(cfg, WithCount(10), WithDoThing(false))
+	From(cfg, WithCount(10), WithDoThing(false))
 
 	if cfg.count != 10 {
 		t.Errorf("expected count of 10 but got %d", cfg.count)
@@ -125,14 +125,14 @@ func TestNewE_error(t *testing.T) {
 	}
 }
 
-func TestNewFromE(t *testing.T) {
+func TestFromE(t *testing.T) {
 	cfg := &TestConfigE{
 		count:      5,
 		doThing:    true,
 		otherThing: true,
 	}
 
-	err := NewFromE(cfg, WithCountE(10), WithDoThingE(false))
+	err := FromE(cfg, WithCountE(10), WithDoThingE(false))
 	if err != nil {
 		t.Errorf("unexpected non-nil err %v", err)
 	}
@@ -148,14 +148,14 @@ func TestNewFromE(t *testing.T) {
 	}
 }
 
-func TestNewFromE_error(t *testing.T) {
+func TestFromE_error(t *testing.T) {
 	cfg := &TestConfigE{
 		count:      5,
 		doThing:    true,
 		otherThing: true,
 	}
 
-	err := NewFromE(cfg, WithCountE(10), WithDoThingE(true), WithError())
+	err := FromE(cfg, WithCountE(10), WithDoThingE(true), WithError())
 	if !errors.Is(err, errWith) {
 		t.Errorf("unexpected err value %v", err)
 	}
